@@ -13,10 +13,60 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
+model User {
+  id Int @id @default(autoincrement())
+  first_name  String
+  last_name String
+  email String @unique
+  familyId Int
+  family Family @relation(fields: [familyId], references: [id])
+  tasks Task[]
+  invitation Invitation?
+}
+
 model Family {
   id Int @id @default(autoincrement())
   name  String
-  //users User[]
-  //tasks Task[]
+  users User[]
+  tasks Task[]
   isActive Boolean
+}
+
+model Invitation {
+  id  Int @id @default(autoincrement())
+  token String @unique
+  createdAt DateTime @default(dbgenerated("now()"))
+  sentOn DateTime
+  expiresOn DateTime
+  isAccepted Boolean @default(false)
+  acceptedOn DateTime
+  userId Int @unique
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  duration Int // in minutes
+  performedOn DateTime
+  description String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  familyId Int
+  family Family @relation(fields: [familyId], references: [id])
+  taskCategoryId Int
+  taskCategory TaskCategory @relation(fields: [taskCategoryId], references: [id])
+  periodId Int
+  period Period @relation(fields: [periodId], references: [id])
+}
+
+model TaskCategory {
+  id Int @id @default(autoincrement())
+  name String
+  tasks Task[]
+}
+
+model Period {
+  id Int @id @default(autoincrement())
+  name String
+  tasks Task[]
 }
