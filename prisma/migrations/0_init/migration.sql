@@ -6,3 +6,4 @@ CREATE TABLE "Family" (
 
     CONSTRAINT "Family_pkey" PRIMARY KEY ("id")
 );
+
